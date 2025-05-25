@@ -1,22 +1,23 @@
 let
 
-    function read_unsigned() : int =
+    function parse_input() : int =
     let
-        var c : string := getchar()
-        var n : int := 0
-        var ok : int := 1
+        var ch : string := getchar()
+        var result : int := 0
+        var valid : int := 1
     in
-        while c <> "" & c <> "\n" do (
-            if ord(c) < ord("0") | ord(c) > ord("9") then
-                ok := 0
+        while ch <> "" & ch <> "\n" do (
+            if ord(ch) < ord("0") | ord(ch) > ord("9") then
+                valid := 0
             else
-                n := n * 10 + (ord(c) - ord("0"));
-            c := getchar()
+                result := result * 10 + (ord(ch) - ord("0"));
+            ch := getchar()
         );
-        if ok = 1 then n else -1
+        if valid = 1 then result else -1
     end
-    var a : int := read_unsigned()
+
+    var final : int := parse_input()
 in
-    print_int(a * 2);
+    print_int(final * 2);
     print("\n")
 end
