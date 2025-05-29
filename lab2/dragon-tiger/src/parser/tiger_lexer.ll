@@ -85,6 +85,22 @@ function return yy::tiger_parser::make_FUNCTION(loc);
 var      return yy::tiger_parser::make_VAR(loc);
 
  /* Identifiers */
+([1-9][0-9]*|0) {
+    errno = 0;
+    long v = strtol(yytext, nullptr, 10);
+    if (errno != 0 || llabs(v) > TIGER_INT_MAX) {
+        utils::error(loc, "integer literal too large: " + std::string(yytext));
+    }
+    else {
+        std::string s = yytext;
+        size_t idx = (s[0]=='+'||s[0]=='-') ? 1 : 0;
+        if (s[idx]=='0' && s.size() > idx+1) {
+            utils::error(loc, "leading zero forbidden: " + s);
+        } else {
+            return yy::tiger_parser::make_INT(v, loc);
+        }
+    }
+}
 {id}       return yy::tiger_parser::make_ID(Symbol(yytext), loc);
 
  /* Strings */

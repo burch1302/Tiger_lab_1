@@ -81,6 +81,7 @@ using utils::nl;
 
 %token <Symbol> ID "id"
 %token <Symbol> STRING "string"
+%token <int> INT "integer"
 
 // Declare the nonterminals types
 
@@ -90,7 +91,7 @@ using utils::nl;
 %type <Decl *> decl funcDecl varDecl;
 %type <std::vector<Decl *>> decls;
 %type <Expr *> expr stringExpr seqExpr callExpr opExpr negExpr
-            assignExpr whileExpr forExpr breakExpr letExpr var;
+            assignExpr whileExpr forExpr breakExpr letExpr var intExpr;
 
 %type <std::vector<Expr *>> exprs nonemptyexprs;
 %type <std::vector<Expr *>> arguments nonemptyarguments;
@@ -99,12 +100,19 @@ using utils::nl;
 
 %type <boost::optional<Symbol>> typeannotation;
 
+%nonassoc FUNCTION VAR TYPE DO OF ASSIGN;
+
+%left OR //or ( | )
+%left AND //AND (&)
+%nonassoc EQ NEQ LT LE GT GE //(=, <>, <, <=, >, >=)
+%left PLUS MINUS //сумма та різниця (+, -)
+%left TIMES DIVIDE // множення ділення
+%right UMINUS //унарний мінус (вище пріоритет ніж + і -)
+
 %%
 
 // Declare precedence rules
 
-%nonassoc FUNCTION VAR TYPE DO OF ASSIGN;
-%left UMINUS;
 
 // Declare grammar rules and production actions
 
@@ -128,6 +136,13 @@ expr: stringExpr { $$ = $1; }
    | forExpr { $$ = $1; }
    | breakExpr { $$ = $1; }
    | letExpr { $$ = $1; }
+   | intExpr { $$ = $1; }
+;
+
+intExpr:
+    INT {
+        $$ = new ast::IntegerLiteral(@1, $1);
+    }
 ;
 
 varDecl: VAR ID typeannotation ASSIGN expr
