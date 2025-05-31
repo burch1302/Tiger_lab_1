@@ -7,12 +7,10 @@ namespace ast {
 
     class Evaluator : public ConstASTIntVisitor {
     public:
-        // IntegerLiteral Ч просто вернуть value
         virtual int32_t visit(const IntegerLiteral& node) override {
             return node.value;
         }
 
-        // BinaryOperator Ч вычислить левый и правый, выполнить операцию
         virtual int32_t visit(const BinaryOperator& node) override {
             int32_t left = node.get_left().accept(*this);
             int32_t right = node.get_right().accept(*this);
@@ -33,10 +31,9 @@ namespace ast {
             default:
                 utils::error(node.loc, "Unknown binary operator");
             }
-            return 0; // „тобы избежать предупреждений
+            return 0;
         }
 
-        // Sequence Ч вычислить все, вернуть последний результат
         virtual int32_t visit(const Sequence& node) override {
             const auto& exprs = node.get_exprs();
             if (exprs.empty()) {
@@ -49,7 +46,6 @@ namespace ast {
             return val;
         }
 
-        // IfThenElse Ч вычислить условие, потом нужную ветку
         virtual int32_t visit(const IfThenElse& node) override {
             int32_t cond = node.get_condition().accept(*this);
             if (cond != 0) {
@@ -60,7 +56,6 @@ namespace ast {
             }
         }
 
-        // ƒл€ всех остальных Ч ошибка
         virtual int32_t visit(const StringLiteral& node) override {
             utils::error(node.loc, "StringLiteral evaluation not supported");
             return 0;
@@ -112,4 +107,4 @@ namespace ast {
         }
     };
 
-} // namespace ast
+}
